@@ -98,6 +98,18 @@ class Capybara::Driver::Webkit
       command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
     end
 
+    def set_proxy(opts = {})
+      # remove proxy?
+      return command("SetProxy") if opts.empty?
+
+      # set a HTTP proxy
+      command("SetProxy",
+        opts[:host] || "localhost",
+        opts[:port] || "0",
+        opts[:user] || "",
+        opts[:pass] || "")
+    end
+
     private
 
     def start_server
@@ -172,7 +184,7 @@ class Capybara::Driver::Webkit
 
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      elsif result != 'ok'
         raise WebkitInvalidResponseError, read_response
       end
 
