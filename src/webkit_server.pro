@@ -30,10 +30,10 @@ HEADERS = \
   SetCookie.h \
   ClearCookies.h \
   GetCookies.h \
-  SetHtml.h \
-  SetProxy.h \
   CommandParser.h \
   CommandFactory.h \
+  SetProxy.h \
+  SetHtml.h \
   SetAttribute.h \
 
 SOURCES = \
@@ -62,18 +62,17 @@ SOURCES = \
   body.cpp \
   Status.cpp \
   Headers.cpp \
+  UnsupportedContentHandler.cpp \
   SetCookie.cpp \
   ClearCookies.cpp \
   GetCookies.cpp \
-  SetHtml.cpp \
   SetProxy.cpp \
-  SetAttribute.cpp \
-  UnsupportedContentHandler.cpp \
   CommandParser.cpp \
   CommandFactory.cpp \
+  SetHtml.cpp \
+  SetAttribute.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
 CONFIG += console
 CONFIG -= app_bundle
-

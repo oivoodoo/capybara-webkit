@@ -109,28 +109,6 @@ describe Capybara::Driver::Webkit::Browser do
             request << line
           end
 
-<<<<<<< HEAD
-  describe '#set_proxy' do
-    before do
-      @host = '127.0.0.1'
-      @user = 'user'
-      @pass = 'secret'
-      @url  = "http://example.org/"
-
-      serv = TCPServer.new(@host, 0)
-      @port = serv.addr[1]
-
-      @proxy_requests = []
-      @proxy = Thread.new(serv, @proxy_requests) do |serv, proxy_requests|
-        while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
-          end
-
-=======
->>>>>>> 352823dc06f815d042806c3bf61f38e6fd71029b
           # send response
           auth_header = request.find { |h| h =~ /Authorization:/i }
           if auth_header || request[0].split(/\s+/)[1] =~ /^\//
@@ -163,10 +141,7 @@ describe Capybara::Driver::Webkit::Browser do
 
     after do
       @proxy.kill
-<<<<<<< HEAD
-=======
       @server.close
->>>>>>> 352823dc06f815d042806c3bf61f38e6fd71029b
     end
 
     it 'uses the HTTP proxy correctly' do

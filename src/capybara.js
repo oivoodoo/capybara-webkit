@@ -62,36 +62,11 @@ Capybara = {
 
   getXPathNode: function(node, path) {
     path = path || [];
-<<<<<<< HEAD
+
     if(node.parentNode) {
       path = this.getXPathNode(node.parentNode, path);
     }
 
-    if(node.previousSibling) {
-      var count = 1;
-      var sibling = node.previousSibling
-      do {
-        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {count++;}
-        sibling = sibling.previousSibling;
-      } while(sibling);
-      if(count == 1) {count = null;}
-    } else if(node.nextSibling) {
-      var sibling = node.nextSibling;
-      do {
-        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {
-          var count = 1;
-          sibling = null;
-        } else {
-          var count = null;
-          sibling = sibling.previousSibling;
-        }
-      } while(sibling);
-    }
-
-    if(node.nodeType == 1) {
-      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
-    }
-=======
     if (node.parentNode) {
       path = this.getXPathNode(node.parentNode, path);
     }
@@ -115,7 +90,6 @@ Capybara = {
     if (node.nodeType == 1)
       path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 1 ? "["+index+"]" : ''));
 
->>>>>>> 352823dc06f815d042806c3bf61f38e6fd71029b
     return path;
   },
 
