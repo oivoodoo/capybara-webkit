@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  RequestedUrl.h \
+  ConsoleMessages.h \
   WebPage.h \
   Server.h \
   Connection.h \
@@ -24,14 +26,19 @@ HEADERS = \
   body.h \
   Status.h \
   Headers.h \
+  UnsupportedContentHandler.h \
   SetCookie.h \
   ClearCookies.h \
   GetCookies.h \
   SetHtml.h \
   SetProxy.h \
+  CommandParser.h \
+  CommandFactory.h \
   SetAttribute.h \
 
 SOURCES = \
+  RequestedUrl.cpp \
+  ConsoleMessages.cpp \
   main.cpp \
   WebPage.cpp \
   Server.cpp \
@@ -61,6 +68,9 @@ SOURCES = \
   SetHtml.cpp \
   SetProxy.cpp \
   SetAttribute.cpp \
+  UnsupportedContentHandler.cpp \
+  CommandParser.cpp \
+  CommandFactory.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

@@ -3,10 +3,12 @@
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 #include "SetAttribute.h"
+#include "UnsupportedContentHandler.h"
 #include <QResource>
 #include <iostream>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+  setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
@@ -17,6 +19,9 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
   connect(this, SIGNAL(frameCreated(QWebFrame *)),
           this, SLOT(frameCreated(QWebFrame *)));
+  connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
+      this, SLOT(handleUnsupportedContent(QNetworkReply*)));
+  this->setViewportSize(QSize(1680, 1050));
 }
 
 void WebPage::setCustomNetworkAccessManager() {
@@ -24,6 +29,7 @@ void WebPage::setCustomNetworkAccessManager() {
   manager->setCookieJar(new NetworkCookieJar());
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this, SLOT(ignoreSslErrors(QNetworkReply *, QList<QSslError>)));
 }
 
 void WebPage::loadJavascript() {
@@ -51,6 +57,10 @@ QString WebPage::userAgentForUrl(const QUrl &url ) const {
   } else {
     return QWebPage::userAgentForUrl(url);
   }
+}
+
+QString WebPage::consoleMessages() {
+  return m_consoleMessages.join("\n");
 }
 
 void WebPage::setUserAgent(QString userAgent) {
@@ -85,9 +95,11 @@ QVariant WebPage::invokeCapybaraFunction(QString &name, QStringList &arguments) 
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
+  QString fullMessage = QString::number(lineNumber) + "|" + message;
   if (!sourceID.isEmpty())
-    std::cout << qPrintable(sourceID) << ":" << lineNumber << " ";
-  std::cout << qPrintable(message) << std::endl;
+    fullMessage = sourceID + "|" + fullMessage;
+  m_consoleMessages.append(fullMessage);
+  std::cout << qPrintable(fullMessage) << std::endl;
 }
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
@@ -114,8 +126,8 @@ void WebPage::loadStarted() {
 }
 
 void WebPage::loadFinished(bool success) {
-  Q_UNUSED(success);
   m_loading = false;
+  emit pageFinished(success);
 }
 
 bool WebPage::isLoading() const {
@@ -161,6 +173,7 @@ QString WebPage::chooseFile(QWebFrame *parentFrame, const QString &suggestedFile
 }
 
 bool WebPage::extension(Extension extension, const ExtensionOption *option, ExtensionReturn *output) {
+  Q_UNUSED(option);
   if (extension == ChooseMultipleFilesExtension) {
     QStringList names = QStringList() << getLastAttachedFileName();
     static_cast<ChooseMultipleFilesExtensionReturn*>(output)->fileNames = names;
@@ -194,6 +207,19 @@ void WebPage::resetSettings() {
   }
 }
 
+void WebPage::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &errors) {
+  if (m_ignoreSslErrors)
+    reply->ignoreSslErrors(errors);
+}
+
+void WebPage::setIgnoreSslErrors(bool ignore) {
+  m_ignoreSslErrors = ignore;
+}
+
+bool WebPage::ignoreSslErrors() {
+  return m_ignoreSslErrors;
+}
+
 int WebPage::getLastStatus() {
   return m_lastStatus;
 }
@@ -203,6 +229,15 @@ void WebPage::resetResponseHeaders() {
   m_pageHeaders = QString();
 }
 
+void WebPage::resetConsoleMessages() {
+  m_consoleMessages.clear();
+}
+
 QString WebPage::pageHeaders() {
   return m_pageHeaders;
+}
+
+void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
+  UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
+  Q_UNUSED(handler);
 }

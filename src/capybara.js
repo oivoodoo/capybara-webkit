@@ -27,6 +27,10 @@ Capybara = {
     return results.join(",");
   },
 
+  isAttached: function(index) {
+    return document.evaluate("ancestor-or-self::html", this.nodes[index], null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue != null;
+  },
+
   text: function (index) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();
@@ -58,6 +62,7 @@ Capybara = {
 
   getXPathNode: function(node, path) {
     path = path || [];
+<<<<<<< HEAD
     if(node.parentNode) {
       path = this.getXPathNode(node.parentNode, path);
     }
@@ -86,6 +91,31 @@ Capybara = {
     if(node.nodeType == 1) {
       path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
     }
+=======
+    if (node.parentNode) {
+      path = this.getXPathNode(node.parentNode, path);
+    }
+
+    var first = node;
+    while (first.previousSibling)
+      first = first.previousSibling;
+
+    var count = 0;
+    var index = 0;
+    var iter = first;
+    while (iter) {
+      if (iter.nodeType == 1 && iter.nodeName == node.nodeName)
+        count++;
+      if (iter.isSameNode(node))
+         index = count;
+      iter = iter.nextSibling;
+      continue;
+    }
+
+    if (node.nodeType == 1)
+      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 1 ? "["+index+"]" : ''));
+
+>>>>>>> 352823dc06f815d042806c3bf61f38e6fd71029b
     return path;
   },
 
@@ -143,7 +173,7 @@ Capybara = {
   set: function(index, value) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();
-    if (type == "text" || type == "textarea" || type == "password") {
+    if (type == "text" || type == "textarea" || type == "password" || type == "email") {
       this.trigger(index, "focus");
       node.value = "";
       var maxLength = this.attribute(index, "maxlength"),

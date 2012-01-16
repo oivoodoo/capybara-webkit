@@ -3,38 +3,24 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
-Dependent on Qt
----------------
+Qt Dependency
+-------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
 development toolkit. You'll need to download the Qt libraries to build and
-install the gem.
+install the gem. You can find instructions for downloading and installing QT on
+the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT)
 
-OS X Lion 10.7:
+Reporting Issues
+----------------
 
-Install Qt via [homebrew](http://mxcl.github.com/homebrew/) (NOTE: can take more than an hour) using:
+Without access to your application code we can't easily debug most crashes or
+generic failures, so we've included a debug version of the driver that prints a
+log of what happened during each test. Before filing a crash bug, please see
+[Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
+You're much more likely to get a fix if you follow those instructions.
 
-    brew install qt --build-from-source
-
-OS X < 10.7:
-
-Download the [non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x) (the smaller of the two downloads).
-
-Ubuntu:
-
-    apt-get install libqt4-dev
-
-Fedora:
-
-    yum install qt-webkit-devel
-
-Gentoo Linux:
-
-    emerge x11-libs/qt-webkit
-
-Other Linux distributions:
-
-[Download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
+If you are having compiling issues please post to the [mailing list](http://groups.google.com/group/capybara-webkit).
 
 CI
 --
@@ -54,7 +40,11 @@ Set your Capybara Javascript driver to webkit:
 
     Capybara.javascript_driver = :webkit
 
-Tag scenarios with @javascript to run them using a headless WebKit browser.
+In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
+
+In RSpec, use the :js => true flag.
+
+Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
 Contributing
 ------------
@@ -64,7 +54,7 @@ See the CONTRIBUTING document.
 About
 -----
 
-The capybara WebKit driver was written by Joe Ferris, Tristan Dunn, and Jason Morrison from [thoughtbot, inc](http://thoughtbot.com/community).
+The capybara WebKit driver is maintained by Joe Ferris and Matt Mongeau. It was written by [thoughtbot, inc](http://thoughtbot.com/community) with the help of numerous [contributions from the open source community](https://github.com/thoughtbot/capybara-webkit/contributors).
 
 Code for rendering the current webpage to a PNG is borrowed from Phantom.js' implementation.
 

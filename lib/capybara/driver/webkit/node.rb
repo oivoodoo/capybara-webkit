@@ -1,7 +1,10 @@
 class Capybara::Driver::Webkit
   class Node < Capybara::Driver::Node
+    NBSP = "\xC2\xA0"
+    NBSP.force_encoding("UTF-8") if NBSP.respond_to?(:force_encoding)
+
     def text
-      invoke "text"
+      invoke("text").gsub(NBSP, ' ').gsub(/\s+/u, ' ').strip
     end
 
     def [](name)
@@ -74,7 +77,7 @@ class Capybara::Driver::Webkit
       invoke "path"
     end
 
-    def submit(opts)
+    def submit(opts = {})
       invoke "submit"
     end
 
@@ -89,7 +92,23 @@ class Capybara::Driver::Webkit
     end
 
     def invoke(name, *args)
-      browser.command "Node", name, native, *args
+      if allow_unattached_nodes? || attached?
+        browser.command "Node", name, native, *args
+      else
+        raise Capybara::Driver::Webkit::NodeNotAttachedError
+      end
+    end
+
+    def allow_unattached_nodes?
+      !automatic_reload?
+    end
+
+    def automatic_reload?
+      Capybara.respond_to?(:automatic_reload) && Capybara.automatic_reload
+    end
+
+    def attached?
+      browser.command("Node", "isAttached", native) == "true"
     end
 
     def browser
